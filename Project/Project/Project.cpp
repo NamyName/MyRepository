@@ -58,6 +58,23 @@ impl merge(impl a, impl b)
 	return output;
 }
 
+bool consume(impl consumer, impl consumed)
+{
+	if (consumer.n != consumed.n)
+	{
+		return 0;
+	}
+	int i;
+	for (i = 0; i < consumer.n; ++i)
+	{
+		if (consumer.src[i] != consumed.src[i] && consumer.src[i]!=-1)
+		{
+			return 0;
+		}
+	}
+	return 1;
+}
+
 impl inttoimpl(int n, int k)//Ïðåîáðàçóåò ÷èñëî â èìïëèêïíòó. n - ÷èñëî, k - êîëè÷åñòâî ïåðåìåííûõ.
 {
 	impl output;
