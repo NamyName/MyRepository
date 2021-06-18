@@ -74,6 +74,37 @@ namespace UnitTest1
 			Assert::AreEqual(x.marker, -1);
 		}
 		
+		TEST_METHOD(consumable)
+		{
+			impl a;
+			a.n = 10;
+			a.src = { 1, 0, 1, 1, -1, 1, 1, -1, 1, 0 };
+			impl b = a;
+			b.src[7] = 0;
+			Assert::IsTrue(consume(a, b));
+		}
+		
+		TEST_METHOD(reverseunconsumable)
+		{
+			impl a;
+			a.n = 10;
+			a.src = { 1, 0, 1, 1, -1, 1, 1, -1, 1, 0 };
+			impl b = a;
+			b.src[7] = 0;
+			Assert::IsFalse(consume(b, a));
+		}
+		
+		TEST_METHOD(unconsumable)
+		{
+			impl a;
+			a.n = 10;
+			a.src = { 1, 0, 1, 1, -1, 1, 1, -1, 1, 0 };
+			impl b = a;
+			b.src[7] = 0;
+			b.src[1] = 1;
+			Assert::IsFalse(consume(a, b));
+		}
+		
 		TEST_METHOD(inttoimpltotal)
 		{
 			int i = 5;
