@@ -40,6 +40,40 @@ namespace UnitTest1
 			Assert::IsFalse(eqimpl(x, y));
 		}
 		
+		TEST_METHOD(mergeable)
+		{
+			impl a;
+			a.n = 10;
+			a.src = { 1, 0, 1, 1, -1, 1, 1, -1, 1, 0 };
+			impl b = a;
+			b.src[3] = 0;
+			impl x = merge(a, b);
+			Assert::AreEqual(x.src[3], -1);
+			x.src[3] = 1;
+			Assert::IsTrue(eqimpl(x, a));
+		}
+		
+		TEST_METHOD(unmergeable)
+		{
+			impl a;
+			a.n = 10;
+			a.src = { 1, 0, 1, 1, -1, 1, 1, -1, 1, 0 };
+			impl b = a;
+			b.src[3] = 0;
+			b.src[1] = 1;
+			impl x = merge(a, b);
+			Assert::AreEqual(x.marker, -1);
+		}
+		
+		TEST_METHOD(equnmergeable)
+		{
+			impl a;
+			a.n = 10;
+			a.src = { 1, 0, 1, 1, -1, 1, 1, -1, 1, 0 };
+			impl x = merge(a, a);
+			Assert::AreEqual(x.marker, -1);
+		}
+		
 		TEST_METHOD(inttoimpltotal)
 		{
 			int i = 5;
