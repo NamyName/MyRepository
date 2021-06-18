@@ -126,6 +126,68 @@ vector<impl> parse_input(string main, bool dnf, int l = 0) // Ïðåîáðàçó
 	return output;
 }
 
+vector<impl> firstfase(vector<impl> parsed)
+{
+	impl breaker;
+	breaker.marker = -1;
+	vector<impl>recursive;
+	vector<impl> output;
+	if (parsed[0].marker == -1)
+	{
+		return vector<impl>{breaker};
+	}
+	else
+	{
+		int i;
+		i = 0;
+		int j;
+		while (parsed[i].marker != -1)
+		{
+			j = i + 1;
+			while (parsed[j].marker != -1)
+			{
+				if (eqimpl(parsed[i], parsed[j]))
+				{
+					parsed.erase(parsed.begin() + j);
+					--j;
+				}
+				else
+				{
+					impl temp = merge(parsed[i], parsed[j]);
+					if (temp.marker != -1)
+					{
+						parsed[i].marker = 1;
+						parsed[j].marker = 1;
+						recursive.push_back(temp);
+					}
+				}
+				++j;
+			}
+			++i;
+		}
+		recursive.push_back(breaker);
+		i = 0;
+		while (parsed[i].marker != -1)
+		{
+			if (parsed[i].marker == 0)
+			{
+				output.push_back(parsed[i]);
+			}
+			i++;
+		}
+		vector<impl> additional = firstfase(recursive);
+		i = 0;
+		while (additional[i].marker != -1)
+		{
+			output.push_back(additional[i]);
+			i++;
+		}
+		output.push_back(additional[i]);
+		return output;
+	}
+}
+
+
 int main()
 {
 	return 0;
