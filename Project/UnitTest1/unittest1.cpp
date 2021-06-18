@@ -156,6 +156,49 @@ namespace UnitTest1
 			Assert::AreEqual(t[2].marker, -1);
 			Assert::AreEqual(t[3].src[0], 4);
 		}
+               
+		TEST_METHOD(parse_inputcheckzero)
+		{
+			string main = "00000000";
+			vector<impl>t = parse_input(main, 1);
+			vector<impl>a;
+			impl b;
+			b.marker = -1;
+			a.push_back(b);
+			Assert::AreEqual(t.size(), a.size());
+		}
+		
+		TEST_METHOD(firstfasesmall)
+		{
+			string main = "01";
+			vector<impl>t = parse_input(main, 1);
+			vector<impl>a = firstfase(t);
+			impl check;
+			check.n = 1;
+			check.src = { 1 };
+			Assert::IsTrue(eqimpl(a[0], check));
+			Assert::AreEqual(a[1].marker, -1);
+		}
+		
+		TEST_METHOD(firstfasegeneral)
+		{
+			string main = "0000000011111111";
+			vector<impl>t = parse_input(main, 1);
+			vector<impl>a = firstfase(t);
+			impl check;
+			check.n = 4;
+			check.src = { 1, -1, -1, -1 };
+			Assert::IsTrue(eqimpl(a[0], check));
+			Assert::AreEqual(a[1].marker, -1);
+		}
 
+		TEST_METHOD(firstfaseempty)
+		{
+			string main = "0000000000000000";
+			vector<impl>t = parse_input(main, 1);
+			vector<impl>a = firstfase(t);
+			Assert::AreEqual(a[0].marker, -1);
+		}
+	
 	};
 }
