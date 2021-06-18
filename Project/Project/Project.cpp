@@ -29,7 +29,36 @@ bool eqimpl(impl a, impl b)
 	return 1;
 }
 
-impl inttoimpl(int n, int k)//Преобразует число в импликпнту. n - число, k - количество переменных.
+impl merge(impl a, impl b)
+{
+	impl falsemerge;
+	falsemerge.marker = -1;
+	if (eqimpl(a, b) || a.n!=b.n)
+	{
+		return falsemerge;
+	}
+	int i, d;
+	d = -1;
+	for (i = 0; i < a.n; ++i)
+	{
+		if (a.src[i] != b.src[i])
+		{
+			if (d != -1)
+			{
+				return falsemerge;
+			}
+			else
+			{
+				d = i;
+			}
+		}
+	}
+	impl output = a;
+	output.src[d] = -1;
+	return output;
+}
+
+impl inttoimpl(int n, int k)//ГЏГ°ГҐГ®ГЎГ°Г Г§ГіГҐГІ Г·ГЁГ±Г«Г® Гў ГЁГ¬ГЇГ«ГЁГЄГЇГ­ГІГі. n - Г·ГЁГ±Г«Г®, k - ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ® ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г»Гµ.
 {
 	impl output;
 	output.n = k;
@@ -49,9 +78,9 @@ impl inttoimpl(int n, int k)//Преобразует число в импликпнту. n - число, k - кол
 	return output;
 }
 
-vector<impl> parse_input(string main, bool dnf, int l = 0) // Преобразует вектор в массив импликант, которые должны выполняться.
+vector<impl> parse_input(string main, bool dnf, int l = 0) // ГЏГ°ГҐГ®ГЎГ°Г Г§ГіГҐГІ ГўГҐГЄГІГ®Г° Гў Г¬Г Г±Г±ГЁГў ГЁГ¬ГЇГ«ГЁГЄГ Г­ГІ, ГЄГ®ГІГ®Г°Г»ГҐ Г¤Г®Г«Г¦Г­Г» ГўГ»ГЇГ®Г«Г­ГїГІГјГ±Гї.
 {
-	if (l == 0) //Находит l, если она не задана.
+	if (l == 0) //ГЌГ ГµГ®Г¤ГЁГІ l, ГҐГ±Г«ГЁ Г®Г­Г  Г­ГҐ Г§Г Г¤Г Г­Г .
 	{
 		int temp = main.size();
 		while (temp > 1)
@@ -63,7 +92,7 @@ vector<impl> parse_input(string main, bool dnf, int l = 0) // Преобразует вектор
 	}
 	vector<impl> output;
 	int i;
-	for (i = 0; i < main.size(); ++i) //Проходит по вектору и записывает подходящие импликанты
+	for (i = 0; i < main.size(); ++i) //ГЏГ°Г®ГµГ®Г¤ГЁГІ ГЇГ® ГўГҐГЄГІГ®Г°Гі ГЁ Г§Г ГЇГЁГ±Г»ГўГ ГҐГІ ГЇГ®Г¤ГµГ®Г¤ГїГ№ГЁГҐ ГЁГ¬ГЇГ«ГЁГЄГ Г­ГІГ»
 	{
 		if (dnf && main.substr(i, 1) == "1")
 		{
