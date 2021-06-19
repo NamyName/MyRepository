@@ -420,5 +420,46 @@ string makestringknf(vector<impl> source)
 
 int main()
 {
+	vector<impl> h = parse_input("0110", 1);
+	vector<impl> f = firstfase(h);
+	vector<impl> g = secondfase(h, f);
+	cout << makestringdnf(g) << endl;
+	int i;
+	int j;
+	string a;
+	while (1)
+	{
+		cout << "Press 1 to type in a vector." << endl;
+		cout << "Or press 2 to quit." << endl;
+		cin >> i;
+		cout << endl;
+		if (i == 2)
+		{
+			break;
+		}
+		if (i == 1)
+		{
+			cout << "Please type the vector in." << endl; 
+			cin >> a;
+			cout << "Press 1 to minimise dnf." << endl;
+			cout << "Or press 2 to minimise knf." << endl;
+			cin >> j;
+			cout << endl;
+			if (j == 1)
+			{
+				vector<impl> h = parse_input(a,1);
+				vector<impl> f = firstfase(h);
+				vector<impl> g = secondfase(h, f);
+				cout << makestringdnf(g) << endl;
+			}
+			if (j == 2)
+			{
+				vector<impl> h = parse_input(a, 0);
+				vector<impl> f = firstfase(h);
+				vector<impl> g = secondfase(h, f);
+				cout << makestringknf(g) << endl;
+			}
+		}
+	}
 	return 0;
 }
