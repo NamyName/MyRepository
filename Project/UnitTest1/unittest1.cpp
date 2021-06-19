@@ -299,6 +299,36 @@ namespace UnitTest1
 			vector<impl>b = secondfase(h, a);
 			Assert::AreEqual(b[5].marker, -1);
 		}
+		
+		TEST_METHOD(impltostrdnf)
+		{
+			impl a;
+			a.n = 4;
+			a.src = { 1, -1, 0, 1 };
+			string b = impltostringdnf(a);
+			string c = "(a*!c*d)";
+			Assert::AreEqual(b, c);
+		}
+
+		TEST_METHOD(impltostrknf)
+		{
+			impl a;
+			a.n = 4;
+			a.src = { 1, -1, 0, 1 };
+			string b = impltostringknf(a);
+			string c = "(!a+c+!d)";
+			Assert::AreEqual(b, c);
+		}
+
+		TEST_METHOD(impltostrspecial)
+		{
+			impl a;
+			a.n = 4;
+			a.src = { -1, -1, -1, -1 };
+			string b = impltostringdnf(a);
+			string c = "1";
+			Assert::AreEqual(b, c);
+		}
 
 	};
 }
