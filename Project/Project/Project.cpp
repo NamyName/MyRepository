@@ -335,6 +335,89 @@ vector<impl> secondfase(vector<impl> default, vector<impl> parsed)
 	return output;
 }
 
+string impltostringdnf(impl a)
+{
+	string output = "(";
+	int i;
+	char counter = 'a';
+	for (i = 0; i < a.n; ++i)
+	{
+		if (a.src[i] == 1)
+		{
+			output = output + counter + "*";
+		}
+		if (a.src[i] == 0)
+		{
+			output = output + "!" + counter + "*";
+		}
+		++counter;
+	}
+	output.erase(output.end()-1);
+	output = output + ")";
+	if (output == ")")
+	{
+		output = "1";
+	}
+	return output;
+}
+
+string impltostringknf(impl a)
+{
+	string output = "(";
+	int i;
+	char counter = 'a';
+	for (i = 0; i < a.n; ++i)
+	{
+		if (a.src[i] == 0)
+		{
+			output = output + counter + "+";
+		}
+		if (a.src[i] == 1)
+		{
+			output = output + "!" + counter + "+";
+		}
+		++counter;
+	}
+	output.erase(output.end() - 1);
+	output = output + ")";
+	if (output == ")")
+	{
+		output = "0";
+	}
+	return output;
+}
+
+string makestringdnf(vector<impl> source)
+{
+	string output = "";
+	int i;
+	for (i = 0; source[i].marker != -1; ++i)
+	{
+		output = output + impltostringdnf(source[i]) + "+";
+	}
+	if (!output.empty())
+	{
+		output.erase(output.end() - 1);
+	}
+	return output;
+}
+
+string makestringknf(vector<impl> source)
+{
+	string output = "";
+	int i;
+	for (i = 0; source[i].marker != -1; ++i)
+	{
+		output = output + impltostringknf(source[i]) + "*";
+	}
+	if (!output.empty())
+	{
+		output.erase(output.end() - 1);
+	}
+	return output;
+}
+
+
 int main()
 {
 	return 0;
