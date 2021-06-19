@@ -420,10 +420,6 @@ string makestringknf(vector<impl> source)
 
 int main()
 {
-	vector<impl> h = parse_input("0110", 1);
-	vector<impl> f = firstfase(h);
-	vector<impl> g = secondfase(h, f);
-	cout << makestringdnf(g) << endl;
 	int i;
 	int j;
 	string a;
