@@ -12,6 +12,13 @@ struct impl
 
 };
 
+struct markedvector
+{
+	int marker = 0;
+	vector<int> body;
+	vector<int> indexes;
+};
+
 bool eqimpl(impl a, impl b)
 {
 	if (a.n != b.n)
@@ -55,6 +62,7 @@ impl merge(impl a, impl b)
 	}
 	impl output = a;
 	output.src[d] = -1;
+	output.marker = 0;
 	return output;
 }
 
@@ -75,7 +83,7 @@ bool consume(impl consumer, impl consumed)
 	return 1;
 }
 
-impl inttoimpl(int n, int k)//Ïðåîáðàçóåò ÷èñëî â èìïëèêïíòó. n - ÷èñëî, k - êîëè÷åñòâî ïåðåìåííûõ.
+impl inttoimpl(int n, int k)//Преобразует число в импликпнту. n - число, k - количество переменных.
 {
 	impl output;
 	output.n = k;
@@ -130,66 +138,204 @@ vector<impl> firstfase(vector<impl> parsed)
 {
 	impl breaker;
 	breaker.marker = -1;
-	vector<impl>recursive;
+	vector<impl> cleared;
+	vector<impl> additional;
 	vector<impl> output;
+	int i;
+	int j;
 	if (parsed[0].marker == -1)
 	{
 		return vector<impl>{breaker};
 	}
-	else
+	for (i = 0; parsed[i].marker != -1; ++i)
 	{
-		int i;
-		i = 0;
-		int j;
-		while (parsed[i].marker != -1)
+		for (j = i - 1; j >= 0; --j)
 		{
-			j = i + 1;
-			while (parsed[j].marker != -1)
+			if (eqimpl(parsed[i], parsed[j]))
 			{
-				if (eqimpl(parsed[i], parsed[j]))
+				parsed[i].marker = -2;
+			}
+		}
+		if (parsed[i].marker != -2)
+		{
+			cleared.push_back(parsed[i]);
+		}
+	}
+	cleared.push_back(breaker);
+	for (i = 0; cleared[i].marker!=-1; ++i)
+	{
+		for (j = i + 1;cleared[j].marker!=-1; ++j)
+		{
+			impl temp = merge(cleared[i], cleared[j]);
+			if (temp.marker != -1)
+			{
+				cleared[i].marker = 1;
+				cleared[j].marker = 1;
+				additional.push_back(temp);
+			}
+		}
+	}
+	additional.push_back(breaker);
+	additional = firstfase(additional);
+	for (i = 0; cleared.begin() + i != cleared.end(); ++i)
+	{
+		if (cleared[i].marker == 0)
+		{
+			output.push_back(cleared[i]);
+		}
+	}
+	for (i = 0; additional[i].marker != -1; ++i)
+	{
+		output.push_back(additional[i]);
+	}
+	output.push_back(breaker);
+	return output;
+}
+
+vector<int> simplify(vector<impl> minimiser, impl minimised)
+{
+	int i;
+	i = 0;
+	vector<int> output;
+	while (minimiser[i].marker != -1)
+	{
+		if (consume(minimiser[i], minimised))
+		{
+			output.push_back(1);
+		}
+		else
+		{
+			output.push_back(0);
+		}
+		++i;
+	}
+	return output;
+}
+
+markedvector noncorerecursive(markedvector search, vector<markedvector> goals)
+{
+	markedvector failedbranch;
+	failedbranch.marker = -100;
+	if (goals.empty())
+	{
+		return search;
+	}
+	if (search.indexes.empty())
+	{
+		return failedbranch;
+	}
+	int n = search.indexes[0];
+	search.indexes.erase(search.indexes.begin());
+	markedvector variant1 = noncorerecursive(search, goals);
+	int i;
+	for (i = 0; goals.begin() + i != goals.end(); ++i)
+	{
+		if (goals[i].body[n] == 1)
+		{
+			goals.erase(goals.begin() + i);
+			--i;
+		}
+	}
+	markedvector variant2 = noncorerecursive(search, goals);
+	++variant2.marker;
+	variant2.body.push_back(n);
+	int a = variant1.marker;
+	int b = variant2.marker;
+	if (a < 0 && b < 0)
+	{
+		return failedbranch;
+	}
+	if (a < 0)
+	{
+		return variant2;
+	}
+	if (b < 0)
+	{
+		return variant1;
+	}
+	if (a>b)
+	{
+		return variant2;
+	}
+	return variant1;
+}
+
+vector<impl> secondfase(vector<impl> default, vector<impl> parsed)
+{
+	int i;
+	int j;
+	vector<int> indexes;
+	markedvector noncore;
+	vector<markedvector> simpled;
+	vector<markedvector> noncored;
+	for (i = 0; default[i].marker != -1; ++i)
+	{
+		vector<int> temp = simplify(parsed, default[i]);
+		int count = -1;
+		for (j = 0; temp.begin() + j != temp.end(); ++j)
+		{
+			if (temp[j] == 1)
+			{
+				if (count == -1)
 				{
-					parsed.erase(parsed.begin() + j);
-					--j;
+					count = j;
 				}
 				else
 				{
-					impl temp = merge(parsed[i], parsed[j]);
-					if (temp.marker != -1)
-					{
-						parsed[i].marker = 1;
-						parsed[j].marker = 1;
-						recursive.push_back(temp);
-					}
+					count = -4;
 				}
-				++j;
 			}
-			++i;
 		}
-		recursive.push_back(breaker);
-		i = 0;
-		while (parsed[i].marker != -1)
+		if (count >= 0)
 		{
-			if (parsed[i].marker == 0)
-			{
-				output.push_back(parsed[i]);
-			}
-			i++;
+			parsed[count].marker = 1;
 		}
-		vector<impl> additional = firstfase(recursive);
-		i = 0;
-		while (additional[i].marker != -1)
-		{
-			output.push_back(additional[i]);
-			i++;
-		}
-		output.push_back(additional[i]);
-		return output;
+		markedvector temp1;
+		temp1.body = temp;
+		simpled.push_back(temp1);
 	}
+	for (i = 0; parsed[i].marker != -1; ++i)
+	{
+		if (parsed[i].marker == 1)
+		{
+			indexes.push_back(i);
+			for (j = 0; simpled.begin() + j != simpled.end(); ++j)
+			{
+				if (simpled[j].body[i] == 1)
+				{
+					simpled[j].marker = 1;
+				}
+			}
+		}
+		else
+		{
+			noncore.indexes.push_back(i);
+		}
+	}
+	for (i = 0; simpled.begin() + i != simpled.end(); ++i)
+	{
+		if (simpled[i].marker == 0)
+		{
+			noncored.push_back(simpled[i]);
+		}
+	}
+	markedvector additional = noncorerecursive(noncore, noncored);
+	for (i = 0; i < additional.marker; ++i)
+	{
+		indexes.push_back(additional.body[i]);
+	}
+	vector<impl> output;
+	for (i = 0; indexes.begin() + i != indexes.end(); ++i)
+	{
+		output.push_back(parsed[indexes[i]]);
+	}
+	impl breaker;
+	breaker.marker = -1;
+	output.push_back(breaker);
+	return output;
 }
-
 
 int main()
 {
 	return 0;
 }
-
