@@ -165,7 +165,7 @@ impl inttoimpl(int n, int k)
 */
 vector<impl> parse_input(string main, bool dnf, int l = 0) 
 {
-	if (l == 0) 
+	if (l == 0) //Расчёт количества переменных.
 	{
 		int temp = main.size();
 		while (temp > 1)
@@ -177,7 +177,7 @@ vector<impl> parse_input(string main, bool dnf, int l = 0)
 	}
 	vector<impl> output;
 	int i;
-	for (i = 0; i < main.size(); ++i) //Ïðîõîäèò ïî âåêòîðó è çàïèñûâàåò ïîäõîäÿùèå èìïëèêàíòû
+	for (i = 0; i < main.size(); ++i) 
 	{
 		if (dnf && main.substr(i, 1) == "1")
 		{
@@ -205,8 +205,8 @@ vector<impl> firstfase(vector<impl> parsed)
 {
 	impl breaker;
 	breaker.marker = -1;
-	vector<impl> cleared;
-	vector<impl> additional;
+	vector<impl> cleared; //Ячейка для копии входного массива без повторов.
+	vector<impl> additional; //Ячейка для хранения массива склеек.
 	vector<impl> output;
 	int i;
 	int j;
@@ -214,7 +214,7 @@ vector<impl> firstfase(vector<impl> parsed)
 	{
 		return vector<impl>{breaker};
 	}
-	for (i = 0; parsed[i].marker != -1; ++i)
+	for (i = 0; parsed[i].marker != -1; ++i) //Цикл генерирует копию входного массива без повторов.
 	{
 		for (j = i - 1; j >= 0; --j)
 		{
@@ -229,7 +229,7 @@ vector<impl> firstfase(vector<impl> parsed)
 		}
 	}
 	cleared.push_back(breaker);
-	for (i = 0; cleared[i].marker!=-1; ++i)
+	for (i = 0; cleared[i].marker!=-1; ++i) //Собственно цикл для склейки.
 	{
 		for (j = i + 1;cleared[j].marker!=-1; ++j)
 		{
@@ -244,14 +244,14 @@ vector<impl> firstfase(vector<impl> parsed)
 	}
 	additional.push_back(breaker);
 	additional = firstfase(additional);
-	for (i = 0; cleared.begin() + i != cleared.end(); ++i)
+	for (i = 0; cleared.begin() + i != cleared.end(); ++i) //Добавляет в массив на выход не склеенные импликанты.
 	{
 		if (cleared[i].marker == 0)
 		{
 			output.push_back(cleared[i]);
 		}
 	}
-	for (i = 0; additional[i].marker != -1; ++i)
+	for (i = 0; additional[i].marker != -1; ++i) //Добавляет в массив на выход значение рекурсии.
 	{
 		output.push_back(additional[i]);
 	}
@@ -315,9 +315,9 @@ markedvector noncorerecursive(markedvector search, vector<markedvector> goals)
 	}
 	int n = search.indexes[0];
 	search.indexes.erase(search.indexes.begin());
-	markedvector variant1 = noncorerecursive(search, goals);
+	markedvector variant1 = noncorerecursive(search, goals); //Определяет лучший возможный вариант, если текущий элемент не будет выбран.
 	int i;
-	for (i = 0; goals.begin() + i != goals.end(); ++i)
+	for (i = 0; goals.begin() + i != goals.end(); ++i) //Убирает цели, которые поглощаются текущим элементом.
 	{
 		if (goals[i].body[n] == 1)
 		{
@@ -325,10 +325,10 @@ markedvector noncorerecursive(markedvector search, vector<markedvector> goals)
 			--i;
 		}
 	}
-	markedvector variant2 = noncorerecursive(search, goals);
+	markedvector variant2 = noncorerecursive(search, goals); //Определяет лучший возможный вариант, если текущий элемент будет выбран.
 	++variant2.marker;
 	variant2.body.push_back(n);
-	int a = variant1.marker;
+	int a = variant1.marker; //Блок ниже выбирает какой из двух вариантов лучше. При равенстве возвращает вариант без текущего элемента.
 	int b = variant2.marker;
 	if (a < 0 && b < 0)
 	{
@@ -361,15 +361,15 @@ vector<impl> secondfase(vector<impl> default, vector<impl> parsed)
 {
 	int i;
 	int j;
-	vector<int> indexes;
-	markedvector noncore;
-	vector<markedvector> simpled;
-	vector<markedvector> noncored;
-	for (i = 0; default[i].marker != -1; ++i)
+	vector<int> indexes; //Массив индексов импликант на вывод.
+	markedvector noncore; //Содержит индексы имликант, не попавших в ядро.
+	vector<markedvector> simpled; //Массив исходных имликант в упрощённом формате из фнкции simplify.
+	vector<markedvector> noncored; //Массив исходных импликант, не поглощаемых ядром.
+	for (i = 0; default[i].marker != -1; ++i) //Преобразует default в упрощённый вид.
 	{
 		vector<int> temp = simplify(parsed, default[i]);
 		int count = -1;
-		for (j = 0; temp.begin() + j != temp.end(); ++j)
+		for (j = 0; temp.begin() + j != temp.end(); ++j) //Определяет исходную импликанту, которую поглощает только один элемент parsed.
 		{
 			if (temp[j] == 1)
 			{
@@ -383,7 +383,7 @@ vector<impl> secondfase(vector<impl> default, vector<impl> parsed)
 				}
 			}
 		}
-		if (count >= 0)
+		if (count >= 0) //Отмечает маркером 1 члены ядра.
 		{
 			parsed[count].marker = 1;
 		}
@@ -391,12 +391,12 @@ vector<impl> secondfase(vector<impl> default, vector<impl> parsed)
 		temp1.body = temp;
 		simpled.push_back(temp1);
 	}
-	for (i = 0; parsed[i].marker != -1; ++i)
+	for (i = 0; parsed[i].marker != -1; ++i) //Кладёт в indexes ядро, а в noncore - все остальные элементы.
 	{
 		if (parsed[i].marker == 1)
 		{
 			indexes.push_back(i);
-			for (j = 0; simpled.begin() + j != simpled.end(); ++j)
+			for (j = 0; simpled.begin() + j != simpled.end(); ++j) //Отмечает маркером 1 импликанты, поглощаемые ядром.
 			{
 				if (simpled[j].body[i] == 1)
 				{
