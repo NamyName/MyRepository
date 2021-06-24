@@ -45,7 +45,7 @@ struct markedvector
 
 \param a,b Сравниваемые импликанты.
 \return Возвращает 1, если импликанты равны и 0 в другом случае.
-/*
+*/
 bool eqimpl(impl a, impl b)
 {
 	if (a.n != b.n)
